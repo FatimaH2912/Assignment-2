@@ -20,13 +20,14 @@ app.get('/health', (req, res) => {
     });
 });
 
-app.get('/tasks', (req, res) => {
-    res.json(taskRepository.getAllTasks());
+app.get("/tasks", async (req, res) => {
+    const tasks = await taskRepository.getAllTasks();
+    res.json(tasks);
 });
 
-app.get('/tasks/:id', (req, res) => {
+app.get("/tasks/:id", async (req, res) => {
     const id = Number(req.params.id);
-    const task = taskRepository.getTaskById(id);
+    const task = await taskRepository.getTaskById(id);
 
     if (!task) {
         return res.status(404).json({ error: `Task ${id} not found` });

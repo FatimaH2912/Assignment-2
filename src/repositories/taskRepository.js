@@ -1,52 +1,20 @@
-const tasks = [
-    { id: 1, title: "Complete Assignment", done: false },
-    { id: 2, title: "Buy Plush Toy", done: false },
-    { id: 3, title: "Watch Movie", done: false }
-];
+const pool = require("../db");
 
-function getAllTasks() {
-    return tasks;
+async function getAllTasks() {
+    const result = await pool.query("SELECT * FROM tasks ORDER BY id");
+    return result.rows;
 }
 
-function getTaskById(id) {
-    return tasks.find(task => task.id === id);
-}
+async function getTaskById(id) {
+    const result = await pool.query(
+        "SELECT * FROM tasks WHERE id = $1",
+        [id]
+    );
 
-function createTask(title) {
-    const newTask = {
-        id: tasks.length + 1,
-        title,
-        done: false
-    };
-
-    tasks.push(newTask);
-    return newTask;
-}
-
-function updateTask(id, title, done) {
-    const task = getTaskById(id);
-
-    if (!task) return null;
-
-    task.title = title;
-    task.done = done;
-
-    return task;
-}
-
-function deleteTask(id) {
-    const index = tasks.findIndex(task => task.id === id);
-
-    if (index === -1) return false;
-
-    tasks.splice(index, 1);
-    return true;
+    return result.rows[0];
 }
 
 module.exports = {
     getAllTasks,
-    getTaskById,
-    createTask,
-    updateTask,
-    deleteTask
+    getTaskById
 };
