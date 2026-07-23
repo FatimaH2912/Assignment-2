@@ -36,48 +36,49 @@ app.get("/tasks/:id", async (req, res) => {
     res.json(task);
 });
 
-app.post('/tasks', (req, res) => {
+app.post("/tasks", async (req, res) => {
+
     const { title } = req.body;
 
-    if (!title || title.trim() === '') {
-        return res.status(400).json({ error: 'Title is required' });
+    if (!title || title.trim() === "") {return res.status(400).json({error: "Title is required"
+    });
     }
 
-    const newTask = taskRepository.createTask(title);
+    const newTask = await taskRepository.createTask(title);
 
     res.status(201).json(newTask);
+
 });
 
-app.put('/tasks/:id', (req, res) => {
+app.put('/tasks/:id', async (req,res)=>{
+
     const id = Number(req.params.id);
-
-    const task = taskRepository.getTaskById(id);
-
-    if (!task) {
-        return res.status(404).json({ error: `Task ${id} not found` });
-    }
-
     const { title, done } = req.body;
 
-    if (!title || title.trim() === '') {
+    if(!title || title.trim() === ''){
         return res.status(400).json({ error: 'Title is required' });
     }
 
-    const updatedTask = taskRepository.updateTask(id, title, done);
+    const task = await taskRepository.updateTask(id, title, done);
 
-    res.json(updatedTask);
-});
-
-app.delete('/tasks/:id', (req, res) => {
-    const id = Number(req.params.id);
-
-    const deleted = taskRepository.deleteTask(id);
-
-    if (!deleted) {
+    if(!task){
         return res.status(404).json({ error: `Task ${id} not found` });
     }
 
-    res.json({ message: `Task ${id} deleted` });
+    res.json(task);
+});
+
+app.delete('/tasks/:id', async (req,res)=>{
+
+    const id = Number(req.params.id);
+
+    const deleted = await taskRepository.deleteTask(id);
+
+    if(!deleted){
+        return res.status(404).json({ error: `Task ${id} not found` });
+    }
+
+    res.status(204).send();
 });
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
